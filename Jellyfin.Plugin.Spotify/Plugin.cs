@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using Jellyfin.Plugin.Spotify.Configuration;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
@@ -26,10 +25,10 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     }
 
     /// <inheritdoc />
-    public override string Name => "Spotify";
+    public override string Name => Constants.Name;
 
     /// <inheritdoc />
-    public override Guid Id => Guid.Parse("8a586678-5b5f-4a40-afaa-5db100a21b34");
+    public override Guid Id => Constants.Guid;
 
     /// <summary>
     /// Gets the current plugin instance.
@@ -44,7 +43,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
             new PluginPageInfo
             {
                 Name = Name,
-                EmbeddedResourcePath = string.Format(CultureInfo.InvariantCulture, "{0}.Configuration.configPage.html", GetType().Namespace)
+                EmbeddedResourcePath = $"{GetType().Namespace}.Configuration.config.html",
             }
         ];
     }

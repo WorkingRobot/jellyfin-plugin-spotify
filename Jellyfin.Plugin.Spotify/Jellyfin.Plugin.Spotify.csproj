@@ -3,16 +3,22 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <RootNamespace>Jellyfin.Plugin.Spotify</RootNamespace>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- <GenerateDocumentationFile>true</GenerateDocumentationFile> -->
+    <!-- <TreatWarningsAsErrors>true</TreatWarningsAsErrors> -->
     <Nullable>enable</Nullable>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <CodeAnalysisRuleSet>../jellyfin.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jellyfin.Controller" Version="10.11.3" />
-    <PackageReference Include="Jellyfin.Model" Version="10.11.3" />
+    <PackageReference Include="Jellyfin.Common" Version="10.11.3" PrivateAssets="All" ExcludeAssets="runtime" />
+    <PackageReference Include="Jellyfin.Controller" Version="10.11.3" PrivateAssets="All" ExcludeAssets="runtime" />
+    <PackageReference Include="Jellyfin.Data" Version="10.11.3" PrivateAssets="All" ExcludeAssets="runtime" />
+    <PackageReference Include="Jellyfin.Extensions" Version="10.11.3" PrivateAssets="All" ExcludeAssets="runtime" />
+    <PackageReference Include="Jellyfin.Model" Version="10.11.3" PrivateAssets="All" ExcludeAssets="runtime" />
+    <PackageReference Include="Jellyfin.Naming" Version="10.11.3" PrivateAssets="All" ExcludeAssets="runtime" />
+    <PackageReference Include="z440.atl.core" Version="7.6.0" PrivateAssets="All" ExcludeAssets="runtime" />
+    <ProjectReference Include="../WaveeMusic/Wavee/Wavee.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,7 +29,9 @@
 
   <ItemGroup>
     <None Remove="Configuration/config.html" />
+    <None Remove="Configuration/config.js" />
     <EmbeddedResource Include="Configuration/config.html" />
+    <EmbeddedResource Include="Configuration/config.js" />
   </ItemGroup>
 
 </Project>

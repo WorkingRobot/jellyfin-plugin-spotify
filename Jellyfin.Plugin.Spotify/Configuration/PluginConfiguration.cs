@@ -1,57 +1,52 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using MediaBrowser.Model.Plugins;
+using Wavee.Core.Authentication;
 
 namespace Jellyfin.Plugin.Spotify.Configuration;
 
 /// <summary>
-/// The configuration options.
-/// </summary>
-public enum SomeOptions
-{
-    /// <summary>
-    /// Option one.
-    /// </summary>
-    OneOption,
-
-    /// <summary>
-    /// Second option.
-    /// </summary>
-    AnotherOption
-}
-
-/// <summary>
 /// Plugin configuration.
 /// </summary>
-public class PluginConfiguration : BasePluginConfiguration
+public sealed class PluginConfiguration : BasePluginConfiguration, ICredentialsCache
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="PluginConfiguration"/> class.
     /// </summary>
     public PluginConfiguration()
     {
-        // set default options here
-        Options = SomeOptions.AnotherOption;
-        TrueFalseSetting = true;
-        AnInteger = 2;
-        AString = "string";
+        DeviceId = Guid.NewGuid();
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether some true or false setting is enabled..
+    /// Gets or sets the Spotify Device ID.
     /// </summary>
-    public bool TrueFalseSetting { get; set; }
+    public Guid DeviceId { get; set; }
 
-    /// <summary>
-    /// Gets or sets an integer setting.
-    /// </summary>
-    public int AnInteger { get; set; }
+    public Credentials? SpotifyCredentials { get; set; }
 
-    /// <summary>
-    /// Gets or sets a string setting.
-    /// </summary>
-    public string AString { get; set; }
+    Task ICredentialsCache.ClearCredentialsAsync(string? username, CancellationToken cancellationToken)
+    {
+        SpotifyCredentials = null;
+        Plugin.Instance!.SaveConfiguration();
+        return Task.CompletedTask;
+    }
 
-    /// <summary>
-    /// Gets or sets an enum option.
-    /// </summary>
-    public SomeOptions Options { get; set; }
+    Task<Credentials?> ICredentialsCache.LoadCredentialsAsync(string? username, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(username == SpotifyCredentials?.Username ? SpotifyCredentials : null);
+    }
+
+    Task<string?> ICredentialsCache.LoadLastUsernameAsync(CancellationToken cancellationToken)
+    {
+        return Task.FromResult(SpotifyCredentials?.Username);
+    }
+
+    Task ICredentialsCache.SaveCredentialsAsync(Credentials credentials, CancellationToken cancellationToken)
+    {
+        SpotifyCredentials = credentials;
+        Plugin.Instance!.SaveConfiguration();
+        return Task.CompletedTask;
+    }
 }

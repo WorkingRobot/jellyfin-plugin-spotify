@@ -8,75 +8,70 @@
 
 <body>
     <div id="SpotifyConfigPage" data-role="page" class="page type-interior pluginConfigurationPage"
-        data-require="emby-input,emby-button,emby-select,emby-checkbox">
+        data-require="emby-input,emby-button,emby-select,emby-checkbox" data-controller="__plugin/configjs">
         <div data-role="content">
             <div class="content-primary">
                 <form id="SpotifyConfigForm">
-                    <div class="selectContainer">
-                        <label class="selectLabel" for="Options">Several Options</label>
-                        <select is="emby-select" id="Options" name="Options" class="emby-select-withcolor emby-select">
-                            <option id="optOneOption" value="OneOption">One Option</option>
-                            <option id="optAnotherOption" value="AnotherOption">Another Option</option>
-                        </select>
-                    </div>
-                    <div class="inputContainer">
-                        <label class="inputLabel inputLabelUnfocused" for="AnInteger">An Integer</label>
-                        <input id="AnInteger" name="AnInteger" type="number" is="emby-input" min="0" />
-                        <div class="fieldDescription">A Description</div>
-                    </div>
-                    <div class="checkboxContainer checkboxContainer-withDescription">
-                        <label class="emby-checkbox-label">
-                            <input id="TrueFalseSetting" name="TrueFalseCheckBox" type="checkbox" is="emby-checkbox" />
-                            <span>A Checkbox</span>
-                        </label>
-                    </div>
-                    <div class="inputContainer">
-                        <label class="inputLabel inputLabelUnfocused" for="AString">A String</label>
-                        <input id="AString" name="AString" type="text" is="emby-input" />
-                        <div class="fieldDescription">Another Description</div>
-                    </div>
-                    <div>
-                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
-                            <span>Save</span>
+                    <!-- <div class="verticalSection">
+                        <div class="fieldDescription hide" id="authSpotifyAlreadyDesc">
+                            Found an existing authorization. (Created at <span id="authSpotifyCreatedAt"></span> with
+                            scopes: <span id="authSpotifyScopes" style="font-style: italic;"></span>)
+                        </div>
+                        <button is="emby-button" type="button" id="authSpotify" class="raised block">
+                            <span>Authorize</span>
                         </button>
+                        <br>
+                    </div>
+
+                    <div class="inputContainer">
+                        <label class="inputLabel inputLabelUnfocused" for="DeviceId">Device ID</label>
+                        <input id="SpotifyDeviceId" name="DeviceId" type="text" is="emby-input" disabled />
+                        <div class="fieldDescription">Device ID used for Spotify authorization</div>
+                    </div>
+
+                    <div class="sectionTitle sectionTitle-cards">
+
+                    </div> -->
+
+                    <div class="inputContainer">
+                        <label class="inputLabel inputLabelUnfocused">Username</label>
+                        <input is="emby-input" type="text" id="SpotifyUsername" label="Username" class="emby-input"
+                            disabled>
+                        <div class="fieldDescription">
+                            The username of the Spotify account you have logged in with.
+                            <span id="SpotifyUsernameLinkContainer" class="hide"><br>Click <a id="SpotifyUsernameLink"
+                                    is="emby-linkbutton" class="button-link emby-button" href="#"
+                                    rel="noopener noreferrer" target="_blank">here</a> to open your
+                                profile.</span>
+                        </div>
+                    </div>
+
+                    <div class="inputContainer">
+                        <button id="SpotifyLogIn" is="emby-button" type="button"
+                            class="raised block button-submit emby-button hide">
+                            <span>Log In</span>
+                        </button>
+                        <button id="SpotifyReauth" is="emby-button" type="button" class="raised block emby-button hide">
+                            <span>Change Account</span>
+                        </button>
+                        <button id="SpotifyDeauth" is="emby-button" type="button"
+                            class="raised button-delete block emby-button hide">
+                            <span>Log Out</span>
+                        </button>
+                    </div>
+
+                    <div class="inputContainer">
+                        <label class="inputLabel inputLabelUnfocused">Device Id</label>
+                        <input is="emby-input" type="text" id="SpotifyDeviceId" label="Device ID" class="emby-input"
+                            disabled>
+                        <div class="fieldDescription">
+                            The Device Id used for Spotify authorization. This is automatically generated for you and
+                            ties your Spotify login to this Jellyfin server.
+                        </div>
                     </div>
                 </form>
             </div>
         </div>
-        <script type="text/javascript">
-            var SpotifyConfig = {
-                pluginUniqueId: '8a586678-5b5f-4a40-afaa-5db100a21b34'
-            };
-
-            document.querySelector('#SpotifyConfigPage')
-                .addEventListener('pageshow', function () {
-                    Dashboard.showLoadingMsg();
-                    ApiClient.getPluginConfiguration(SpotifyConfig.pluginUniqueId).then(function (config) {
-                        document.querySelector('#Options').value = config.Options;
-                        document.querySelector('#AnInteger').value = config.AnInteger;
-                        document.querySelector('#TrueFalseSetting').checked = config.TrueFalseSetting;
-                        document.querySelector('#AString').value = config.AString;
-                        Dashboard.hideLoadingMsg();
-                    });
-                });
-
-            document.querySelector('#SpotifyConfigForm')
-                .addEventListener('submit', function (e) {
-                    Dashboard.showLoadingMsg();
-                    ApiClient.getPluginConfiguration(SpotifyConfig.pluginUniqueId).then(function (config) {
-                        config.Options = document.querySelector('#Options').value;
-                        config.AnInteger = document.querySelector('#AnInteger').value;
-                        config.TrueFalseSetting = document.querySelector('#TrueFalseSetting').checked;
-                        config.AString = document.querySelector('#AString').value;
-                        ApiClient.updatePluginConfiguration(SpotifyConfig.pluginUniqueId, config).then(function (result) {
-                            Dashboard.processPluginConfigurationUpdateResult(result);
-                        });
-                    });
-
-                    e.preventDefault();
-                    return false;
-                });
-        </script>
     </div>
 </body>
 

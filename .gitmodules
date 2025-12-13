@@ -1,0 +1,3 @@
+[submodule "WaveeMusic"]
+	path = WaveeMusic
+	url = https://github.com/christosk92/WaveeMusic.git

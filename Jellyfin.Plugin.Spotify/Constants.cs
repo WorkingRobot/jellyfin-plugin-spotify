@@ -1,11 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Jellyfin.Plugin.Spotify.Configuration;
-using MediaBrowser.Common.Configuration;
-using MediaBrowser.Common.Plugins;
-using MediaBrowser.Model.Plugins;
-using MediaBrowser.Model.Serialization;
+using Proto = Wavee.Protocol.Metadata;
 
 namespace Jellyfin.Plugin.Spotify;
 
@@ -18,6 +12,7 @@ internal static class Constants
     /// The name of the plugin.
     /// </summary>
     public const string Name = "Spotify";
+    public const string ApiPrefix = "Jellyfin.Plugin.Spotify";
 
     public const string OpenUrl = "https://open.spotify.com";
 
@@ -25,6 +20,10 @@ internal static class Constants
     public const string AlbumKey = "album";
     public const string ArtistKey = "artist";
     public const string TrackKey = "track";
+
+    public const string ProviderAlbum = $"{ProviderKey}:{AlbumKey}";
+    public const string ProviderArtist = $"{ProviderKey}:{ArtistKey}";
+    public const string ProviderTrack = $"{ProviderKey}:{TrackKey}";
 
     public const string AlbumName = "Album";
     public const string ArtistName = "Artist";
@@ -34,4 +33,22 @@ internal static class Constants
     /// The Guid of the plugin.
     /// </summary>
     public static readonly Guid Guid = Guid.Parse("8a586678-5b5f-4a40-afaa-5db100a21b34");
+
+    public static string FormatAlbumId(string id) => $"{ProviderAlbum}:{id}";
+
+    public static string FormatArtistId(string id) => $"{ProviderArtist}:{id}";
+
+    public static string FormatTrackId(string id) => $"{ProviderTrack}:{id}";
+
+    public static DateTime ToDateTime(this Proto.Date date)
+    {
+        var year = date.Year;
+        var month = date.HasMonth ? date.Month : 1;
+        var day = date.HasDay ? date.Day : 1;
+        var hour = date.Hour;
+        var minute = date.Minute;
+        var second = 0;
+
+        return new DateTime(year, month, day, hour, minute, second, DateTimeKind.Utc);
+    }
 }

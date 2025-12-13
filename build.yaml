@@ -4,13 +4,22 @@ guid: "8a586678-5b5f-4a40-afaa-5db100a21b34"
 version: "1.0.0.0"
 targetAbi: "10.9.0.0"
 framework: "net9.0"
-overview: "Short description about your plugin"
+overview: "Spotify metadata provider"
 description: >
-  This is a longer description that can span more than one
-  line and include details about your plugin.
-category: "General"
-owner: "asriel"
+  Grabs track, artist, and album metadata directly from Spotify.
+  Requires a valid Spotify account, but it does not need to be Premium.
+category: "Music"
+owner: "Asriel"
 artifacts:
   - "Jellyfin.Plugin.Spotify.dll"
+  - "Wavee.dll"
+  - "Google.Protobuf.dll"
+  - "GraphQL.Client.Abstractions.dll"
+  - "GraphQL.Client.Abstractions.Websocket.dll"
+  - "GraphQL.Client.dll"
+  - "GraphQL.Client.Serializer.SystemTextJson.dll"
+  - "GraphQL.Primitives.dll"
+  - "System.Reactive.dll"
+  - "System.Security.Cryptography.ProtectedData.dll"
 changelog: >
-  changelog
+  - :D

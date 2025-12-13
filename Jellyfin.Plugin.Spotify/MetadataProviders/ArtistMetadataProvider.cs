@@ -118,7 +118,7 @@ public class ArtistMetadataProvider(ILoggerFactory loggerFactory, SessionManager
             foreach (var songInfo in searchInfo.SongInfos)
             {
                 spotifyId ??= songInfo.GetProviderId(Constants.ProviderArtist) is { } songAlbumId ? SpotifyId.TryFromBase62(songAlbumId) : null;
-                spotifyId ??= TagHelper.ExtractSpotifyIds(songInfo.Path, _logger).Album;
+                // spotifyId ??= TagHelper.ExtractSpotifyIds(songInfo.Path, _logger).Artist;
                 if (spotifyId.HasValue)
                 {
                     break;

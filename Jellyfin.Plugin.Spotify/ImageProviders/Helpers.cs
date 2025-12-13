@@ -80,8 +80,8 @@ internal static class Helpers
         me.MinBy(i => i.Size);
 
     public static Wavee.Protocol.Partner.DataSource? GetBestImage(this Wavee.Protocol.Partner.HeaderImage me) =>
-        me.Data.Sources.MaxBy(i => i.MaxWidth);
+        me.Data?.Sources?.MaxBy(i => i.MaxWidth);
 
     public static Wavee.Protocol.Partner.DataSource? GetWorstImage(this Wavee.Protocol.Partner.HeaderImage me) =>
-        me.Data.Sources.MinBy(i => i.MaxWidth);
+        me.Data?.Sources?.MinBy(i => i.MaxWidth);
 }

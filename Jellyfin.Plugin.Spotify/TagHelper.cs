@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using ATL;
 using Jellyfin.Extensions;
 using Microsoft.Extensions.Logging;
@@ -49,21 +50,65 @@ internal static class TagHelper
             albumId = SpotifyId.TryFromBase62(prefixedSpotifyId[(Constants.ProviderAlbum.Length + 1)..]);
         }
 
-        if (TryGetSanitizedAdditionalFields(tagTrack, "SPOTIFY_ARTIST_ID", out prefixedSpotifyId) && prefixedSpotifyId.StartsWith(Constants.ProviderArtist + ":", StringComparison.Ordinal))
+        if (TryGetSanitizedAdditionalFields(tagTrack, "SPOTIFY_ARTIST_ID", out prefixedSpotifyId))
         {
-            logger?.LogInformation("Found SPOTIFY_ARTIST_ID tag: {TagValue}", prefixedSpotifyId);
-            if (SpotifyId.TryFromBase62(prefixedSpotifyId[(Constants.ProviderArtist.Length + 1)..]) is { } artistId)
+            if (prefixedSpotifyId.Contains('\x1f'))
             {
-                artistIds.Add(artistId);
+                logger?.LogInformation("Found {TagCount} SPOTIFY_ARTIST_ID potential tags", prefixedSpotifyId.Count(c => c == '\x1f'));
+                var tags = prefixedSpotifyId.Split('\x1f', StringSplitOptions.TrimEntries);
+                foreach (var tag in tags)
+                {
+                    if (tag.StartsWith(Constants.ProviderArtist + ":", StringComparison.Ordinal))
+                    {
+                        logger?.LogInformation("Found SPOTIFY_ARTIST_ID tag: {TagValue}", tag);
+                        if (SpotifyId.TryFromBase62(tag[(Constants.ProviderArtist.Length + 1)..]) is { } artistId)
+                        {
+                            artistIds.Add(artistId);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (prefixedSpotifyId.StartsWith(Constants.ProviderArtist + ":", StringComparison.Ordinal))
+                {
+                    logger?.LogInformation("Found SPOTIFY_ARTIST_ID tag: {TagValue}", prefixedSpotifyId);
+                    if (SpotifyId.TryFromBase62(prefixedSpotifyId[(Constants.ProviderArtist.Length + 1)..]) is { } artistId)
+                    {
+                        artistIds.Add(artistId);
+                    }
+                }
             }
         }
 
-        if (TryGetSanitizedAdditionalFields(tagTrack, "SPOTIFY_ALBUM_ARTIST_ID", out prefixedSpotifyId) && prefixedSpotifyId.StartsWith(Constants.ProviderArtist + ":", StringComparison.Ordinal))
+        if (TryGetSanitizedAdditionalFields(tagTrack, "SPOTIFY_ALBUM_ARTIST_ID", out prefixedSpotifyId))
         {
-            logger?.LogInformation("Found SPOTIFY_ALBUM_ARTIST_ID tag: {TagValue}", prefixedSpotifyId);
-            if (SpotifyId.TryFromBase62(prefixedSpotifyId[(Constants.ProviderArtist.Length + 1)..]) is { } artistId)
+            if (prefixedSpotifyId.Contains('\x1f'))
             {
-                albumArtistIds.Add(artistId);
+                logger?.LogInformation("Found {TagCount} SPOTIFY_ALBUM_ARTIST_ID potential tags", prefixedSpotifyId.Count(c => c == '\x1f'));
+                var tags = prefixedSpotifyId.Split('\x1f', StringSplitOptions.TrimEntries);
+                foreach (var tag in tags)
+                {
+                    if (tag.StartsWith(Constants.ProviderArtist + ":", StringComparison.Ordinal))
+                    {
+                        logger?.LogInformation("Found SPOTIFY_ALBUM_ARTIST_ID tag: {TagValue}", tag);
+                        if (SpotifyId.TryFromBase62(tag[(Constants.ProviderArtist.Length + 1)..]) is { } artistId)
+                        {
+                            albumArtistIds.Add(artistId);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (prefixedSpotifyId.StartsWith(Constants.ProviderArtist + ":", StringComparison.Ordinal))
+                {
+                    logger?.LogInformation("Found SPOTIFY_ALBUM_ARTIST_ID tag: {TagValue}", prefixedSpotifyId);
+                    if (SpotifyId.TryFromBase62(prefixedSpotifyId[(Constants.ProviderArtist.Length + 1)..]) is { } artistId)
+                    {
+                        albumArtistIds.Add(artistId);
+                    }
+                }
             }
         }
 

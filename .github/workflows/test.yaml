@@ -1,16 +1,16 @@
-name: '🧪 Test Plugin'
+name: "🧪 Test Plugin"
 
 on:
   push:
     branches:
-      - master
+      - main
     paths-ignore:
-      - '**/*.md'
+      - "**/*.md"
   pull_request:
     branches:
-      - master
+      - main
     paths-ignore:
-      - '**/*.md'
+      - "**/*.md"
   workflow_dispatch:
 
 jobs:

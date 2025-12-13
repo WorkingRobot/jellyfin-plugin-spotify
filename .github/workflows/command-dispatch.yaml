@@ -1,5 +1,5 @@
 # Allows for the definition of PR and Issue /commands
-name: '📟 Slash Command Dispatcher'
+name: "📟 Slash Command Dispatcher"
 
 on:
   issue_comment:
@@ -8,6 +8,6 @@ on:
 
 jobs:
   call:
-    uses: jellyfin/jellyfin-meta-plugins/.github/workflows/command-dispatch.yaml@master
+    uses: WorkingRobot/jellyfin-meta-plugins/.github/workflows/command-dispatch.yaml@master
     secrets:
       token: .

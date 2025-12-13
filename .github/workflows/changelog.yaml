@@ -13,8 +13,8 @@ on:
 
 jobs:
   call:
-    uses: jellyfin/jellyfin-meta-plugins/.github/workflows/changelog.yaml@master
+    uses: WorkingRobot/jellyfin-meta-plugins/.github/workflows/changelog.yaml@master
     with:
-      repository-name: jellyfin/jellyfin-plugin-template
+      repository-name: WorkingRobot/jellyfin-plugin-spotify
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}

@@ -205,7 +205,7 @@ public sealed class SessionManager : IAsyncDisposable
         }
     }
 
-    private class ApiSearchResults
+    private sealed class ApiSearchResults
     {
         [JsonPropertyName("tracks")]
         public ReturnType? Tracks { get; set; }
@@ -216,13 +216,13 @@ public sealed class SessionManager : IAsyncDisposable
         [JsonPropertyName("artists")]
         public ReturnType? Artists { get; set; }
 
-        public class ReturnType
+        public sealed class ReturnType
         {
             [JsonPropertyName("items")]
             public Item[]? Items { get; set; }
         }
 
-        public class Item
+        public sealed class Item
         {
             [JsonPropertyName("id")]
             public string? Id { get; set; }

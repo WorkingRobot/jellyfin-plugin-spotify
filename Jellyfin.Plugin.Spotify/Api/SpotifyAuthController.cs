@@ -103,5 +103,6 @@ public sealed class SpotifyAuthController(ILoggerFactory loggerFactory, SessionM
     public void Dispose()
     {
         ActiveDeviceCodeRequest?.Dispose();
+        _sessionManager?.DisposeAsync().AsTask().Wait();
     }
 }

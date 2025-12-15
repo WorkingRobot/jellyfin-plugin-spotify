@@ -34,11 +34,11 @@ internal static class Constants
     /// </summary>
     public static readonly Guid Guid = Guid.Parse("8a586678-5b5f-4a40-afaa-5db100a21b34");
 
-    public static string FormatAlbumId(string id) => $"{ProviderAlbum}:{id}";
+    public static string FormatAlbumId(SpotifyId id) => $"{ProviderAlbum}:{id.Base62}";
 
-    public static string FormatArtistId(string id) => $"{ProviderArtist}:{id}";
+    public static string FormatArtistId(SpotifyId id) => $"{ProviderArtist}:{id.Base62}";
 
-    public static string FormatTrackId(string id) => $"{ProviderTrack}:{id}";
+    public static string FormatTrackId(SpotifyId id) => $"{ProviderTrack}:{id.Base62}";
 
     public static DateTime ToDateTime(this Proto.Date date)
     {

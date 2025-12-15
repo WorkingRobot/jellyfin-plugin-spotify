@@ -72,11 +72,11 @@ public class ArtistMetadataProvider(ILoggerFactory loggerFactory, SessionManager
 
         var spotifyIdValue = spotifyId.Value;
 
-        _logger.LogInformation("Using ID {Id} for artist metadata lookup", Constants.FormatArtistId(spotifyIdValue.Base62));
+        _logger.LogInformation("Using ID {Id} for artist metadata lookup", Constants.FormatArtistId(spotifyIdValue));
         artistData = await _sessionManager.GetArtistAsync(spotifyIdValue, cancellationToken).ConfigureAwait(false);
         if (artistData is null)
         {
-            _logger.LogInformation("No artist data found using ID {Id}", Constants.FormatArtistId(spotifyIdValue.Base62));
+            _logger.LogInformation("No artist data found using ID {Id}", Constants.FormatArtistId(spotifyIdValue));
             return EmptyMetadata;
         }
 
@@ -128,7 +128,7 @@ public class ArtistMetadataProvider(ILoggerFactory loggerFactory, SessionManager
 
         if (spotifyId is { } spotifyIdValue)
         {
-            _logger.LogInformation("Looking up {ID}", Constants.FormatArtistId(spotifyIdValue.Base62));
+            _logger.LogInformation("Looking up {ID}", Constants.FormatArtistId(spotifyIdValue));
             var artistData = await _sessionManager.GetArtistAsync(spotifyIdValue, cancellationToken).ConfigureAwait(false);
             return [artistData.GetRemoteSearchResult(_sessionManager)];
         }
@@ -143,7 +143,7 @@ public class ArtistMetadataProvider(ILoggerFactory loggerFactory, SessionManager
         var allResults = new List<RemoteSearchResult>();
         foreach (var artistId in searchResults)
         {
-            _logger.LogInformation("Processing search result: {ResultName}", Constants.FormatArtistId(artistId.Base62));
+            _logger.LogInformation("Processing search result: {ResultName}", Constants.FormatArtistId(artistId));
             var artistData = await _sessionManager.GetArtistAsync(artistId, cancellationToken).ConfigureAwait(false);
             allResults.Add(artistData.GetRemoteSearchResult(_sessionManager));
         }

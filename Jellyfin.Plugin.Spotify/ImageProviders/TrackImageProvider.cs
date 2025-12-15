@@ -44,7 +44,7 @@ public class TrackImageProvider(ILoggerFactory loggerFactory, SessionManager ses
 
         if (spotifyId is { } spotifyIdValue)
         {
-            _logger.LogInformation("Looking up {ID}", Constants.FormatTrackId(spotifyIdValue.Base62));
+            _logger.LogInformation("Looking up {ID}", Constants.FormatTrackId(spotifyIdValue));
             var trackData = await _sessionManager.GetTrackAsync(spotifyIdValue, cancellationToken).ConfigureAwait(false);
             var trackImage = trackData.GetRemoteImageInfo(_sessionManager);
             if (trackImage != null)
@@ -53,7 +53,7 @@ public class TrackImageProvider(ILoggerFactory loggerFactory, SessionManager ses
             }
             else
             {
-                _logger.LogInformation("No image found for track ID {ID}", Constants.FormatTrackId(spotifyIdValue.Base62));
+                _logger.LogInformation("No image found for track ID {ID}", Constants.FormatTrackId(spotifyIdValue));
                 return [];
             }
         }
@@ -68,7 +68,7 @@ public class TrackImageProvider(ILoggerFactory loggerFactory, SessionManager ses
         var allResults = new List<RemoteImageInfo>();
         foreach (var trackId in searchResults)
         {
-            _logger.LogDebug("Processing search result: {ResultName}", Constants.FormatTrackId(trackId.Base62));
+            _logger.LogDebug("Processing search result: {ResultName}", Constants.FormatTrackId(trackId));
             var trackData = await _sessionManager.GetTrackAsync(trackId, cancellationToken).ConfigureAwait(false);
 
             var trackImage = trackData.GetRemoteImageInfo(_sessionManager);
@@ -78,7 +78,7 @@ public class TrackImageProvider(ILoggerFactory loggerFactory, SessionManager ses
             }
             else
             {
-                _logger.LogInformation("No image found for track ID {ID}", Constants.FormatTrackId(trackId!.Base62));
+                _logger.LogInformation("No image found for track ID {ID}", Constants.FormatTrackId(trackId));
             }
         }
 

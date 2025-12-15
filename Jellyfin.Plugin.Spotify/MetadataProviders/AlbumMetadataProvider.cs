@@ -61,11 +61,11 @@ public class AlbumMetadataProvider(ILoggerFactory loggerFactory, SessionManager 
 
         if (spotifyId is { } spotifyIdValue)
         {
-            _logger.LogInformation("Using ID {Id} for album metadata lookup", Constants.FormatAlbumId(spotifyIdValue.Base62));
+            _logger.LogInformation("Using ID {Id} for album metadata lookup", Constants.FormatAlbumId(spotifyIdValue));
             albumData = await _sessionManager.GetAlbumAsync(spotifyIdValue, cancellationToken).ConfigureAwait(false);
             if (albumData is null)
             {
-                _logger.LogInformation("No album data found using ID {Id}", Constants.FormatAlbumId(spotifyIdValue.Base62));
+                _logger.LogInformation("No album data found using ID {Id}", Constants.FormatAlbumId(spotifyIdValue));
                 return EmptyMetadata;
             }
         }
@@ -136,7 +136,7 @@ public class AlbumMetadataProvider(ILoggerFactory loggerFactory, SessionManager 
 
         if (spotifyId is { } spotifyIdValue)
         {
-            _logger.LogInformation("Looking up {ID}", Constants.FormatAlbumId(spotifyIdValue.Base62));
+            _logger.LogInformation("Looking up {ID}", Constants.FormatAlbumId(spotifyIdValue));
             var albumData = await _sessionManager.GetAlbumAsync(spotifyIdValue, cancellationToken).ConfigureAwait(false);
             return [albumData.GetRemoteSearchResult(_sessionManager)];
         }
@@ -151,7 +151,7 @@ public class AlbumMetadataProvider(ILoggerFactory loggerFactory, SessionManager 
         var allResults = new List<RemoteSearchResult>();
         foreach (var albumId in searchResults)
         {
-            _logger.LogInformation("Processing search result: {ResultName}", Constants.FormatAlbumId(albumId.Base62));
+            _logger.LogInformation("Processing search result: {ResultName}", Constants.FormatAlbumId(albumId));
             var albumData = await _sessionManager.GetAlbumAsync(albumId, cancellationToken).ConfigureAwait(false);
 
             // Check year only if the year was specified in the search form

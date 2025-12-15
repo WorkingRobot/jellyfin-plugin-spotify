@@ -53,11 +53,11 @@ public class AlbumImageProvider(ILoggerFactory loggerFactory, SessionManager ses
 
         if (spotifyId is { } spotifyIdValue)
         {
-            _logger.LogInformation("Using ID {Id} for album metadata lookup", Constants.FormatAlbumId(spotifyIdValue.Base62));
+            _logger.LogInformation("Using ID {Id} for album metadata lookup", Constants.FormatAlbumId(spotifyIdValue));
             var albumData = await _sessionManager.GetAlbumAsync(spotifyIdValue, cancellationToken).ConfigureAwait(false);
             if (albumData is null)
             {
-                _logger.LogInformation("No album data found using ID {Id}", Constants.FormatAlbumId(spotifyIdValue.Base62));
+                _logger.LogInformation("No album data found using ID {Id}", Constants.FormatAlbumId(spotifyIdValue));
                 return [];
             }
 
@@ -68,7 +68,7 @@ public class AlbumImageProvider(ILoggerFactory loggerFactory, SessionManager ses
             }
             else
             {
-                _logger.LogInformation("No image found for album ID {ID}", Constants.FormatAlbumId(spotifyIdValue.Base62));
+                _logger.LogInformation("No image found for album ID {ID}", Constants.FormatAlbumId(spotifyIdValue));
                 return [];
             }
         }
@@ -83,7 +83,7 @@ public class AlbumImageProvider(ILoggerFactory loggerFactory, SessionManager ses
         var allResults = new List<RemoteImageInfo>();
         foreach (var albumId in searchResults)
         {
-            _logger.LogDebug("Processing search result: {ResultName}", Constants.FormatAlbumId(albumId.Base62));
+            _logger.LogDebug("Processing search result: {ResultName}", Constants.FormatAlbumId(albumId));
             var albumData = await _sessionManager.GetAlbumAsync(albumId, cancellationToken).ConfigureAwait(false);
 
             // Check year only if the year was specified in the search form
@@ -100,7 +100,7 @@ public class AlbumImageProvider(ILoggerFactory loggerFactory, SessionManager ses
             }
             else
             {
-                _logger.LogInformation("No image found for album ID {ID}", Constants.FormatAlbumId(albumId!.Base62));
+                _logger.LogInformation("No image found for album ID {ID}", Constants.FormatAlbumId(albumId));
             }
         }
 

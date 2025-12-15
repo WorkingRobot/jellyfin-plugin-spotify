@@ -53,11 +53,11 @@ public class ArtistImageProvider(ILoggerFactory loggerFactory, SessionManager se
 
         if (spotifyId is { } spotifyIdValue)
         {
-            _logger.LogInformation("Using ID {Id} for artist metadata lookup", Constants.FormatArtistId(spotifyIdValue.Base62));
+            _logger.LogInformation("Using ID {Id} for artist metadata lookup", Constants.FormatArtistId(spotifyIdValue));
             var artistData = await _sessionManager.GetArtistAsync(spotifyIdValue, cancellationToken).ConfigureAwait(false);
             if (artistData is null)
             {
-                _logger.LogInformation("No artist data found using ID {Id}", Constants.FormatArtistId(spotifyIdValue.Base62));
+                _logger.LogInformation("No artist data found using ID {Id}", Constants.FormatArtistId(spotifyIdValue));
                 return [];
             }
 
@@ -71,7 +71,7 @@ public class ArtistImageProvider(ILoggerFactory loggerFactory, SessionManager se
             }
             else
             {
-                _logger.LogInformation("No image found for artist ID {ID}", Constants.FormatArtistId(spotifyIdValue.Base62));
+                _logger.LogInformation("No image found for artist ID {ID}", Constants.FormatArtistId(spotifyIdValue));
                 return [];
             }
         }
@@ -86,7 +86,7 @@ public class ArtistImageProvider(ILoggerFactory loggerFactory, SessionManager se
         var allResults = new List<RemoteImageInfo>();
         foreach (var artistId in searchResults)
         {
-            _logger.LogDebug("Processing search result: {ResultName}", Constants.FormatArtistId(artistId.Base62));
+            _logger.LogDebug("Processing search result: {ResultName}", Constants.FormatArtistId(artistId));
             var artistData = await _sessionManager.GetArtistAsync(artistId, cancellationToken).ConfigureAwait(false);
             var artistOverview = await _sessionManager.GetArtistOverviewAsync(artistId, cancellationToken).ConfigureAwait(false);
 
@@ -102,7 +102,7 @@ public class ArtistImageProvider(ILoggerFactory loggerFactory, SessionManager se
             }
             else
             {
-                _logger.LogInformation("No image found for artist ID {ID}", Constants.FormatArtistId(artistId!.Base62));
+                _logger.LogInformation("No image found for artist ID {ID}", Constants.FormatArtistId(artistId));
             }
         }
 

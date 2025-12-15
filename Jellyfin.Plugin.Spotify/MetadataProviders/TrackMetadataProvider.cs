@@ -81,7 +81,7 @@ public class TrackMetadataProvider(ILoggerFactory loggerFactory, SessionManager 
                 AlbumArtists = [.. trackData.Album.Artist.Select(a => a.Name)],
                 IndexNumber = trackData.Number,
                 ParentIndexNumber = trackData.DiscNumber,
-                CommunityRating = trackData.HasPopularity ? trackData.Popularity : null,
+                CommunityRating = trackData.HasPopularity ? trackData.Popularity / 10f : null,
                 Tags = [.. trackData.Tags],
                 ProductionYear = trackData.Album.Date.Year,
                 PremiereDate = trackData.Album.Date.ToDateTime(),

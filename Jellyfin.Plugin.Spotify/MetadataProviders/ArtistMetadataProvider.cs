@@ -87,7 +87,7 @@ public class ArtistMetadataProvider(ILoggerFactory loggerFactory, SessionManager
             Item = new MusicArtist
             {
                 Name = artistData.Name,
-                CommunityRating = artistData.HasPopularity ? artistData.Popularity : null,
+                CommunityRating = artistData.HasPopularity ? artistData.Popularity / 10f : null,
                 Overview = artistOverview.ArtistUnion.Profile.Biography.Text,
             },
             HasMetadata = true

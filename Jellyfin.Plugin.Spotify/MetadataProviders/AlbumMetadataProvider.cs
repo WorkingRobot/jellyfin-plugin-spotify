@@ -82,7 +82,7 @@ public class AlbumMetadataProvider(ILoggerFactory loggerFactory, SessionManager 
                 Name = albumData.Name,
                 Artists = [.. albumData.Artist.Select(a => a.Name)],
                 AlbumArtists = [.. albumData.Artist.Select(a => a.Name)],
-                CommunityRating = albumData.HasPopularity ? albumData.Popularity : null,
+                CommunityRating = albumData.HasPopularity ? albumData.Popularity / 10f : null,
                 Overview = albumData.Review.FirstOrDefault() ?? string.Empty,
                 ProductionYear = albumData.Date.Year,
                 PremiereDate = albumData.Date.ToDateTime(),

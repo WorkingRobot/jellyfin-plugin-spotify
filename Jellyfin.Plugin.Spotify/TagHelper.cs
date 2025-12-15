@@ -10,115 +10,74 @@ namespace Jellyfin.Plugin.Spotify;
 
 internal static class TagHelper
 {
-    internal readonly record struct EmbeddedIds
-    {
-        public SpotifyId? Track { get; init; }
-
-        public SpotifyId? Album { get; init; }
-
-        public SpotifyId[] Artist { get; init; }
-
-        public SpotifyId[] AlbumArtist { get; init; }
-    }
-
     public static EmbeddedIds ExtractSpotifyIds(string path, ILogger? logger = null)
     {
         var tagTrack = new Track(path);
 
         logger?.LogInformation("Attempting to extract Spotify ID from tags for file {Path}", path);
 
-        SpotifyId? trackId = null;
-        SpotifyId? albumId = null;
-        List<SpotifyId> artistIds = [];
-        List<SpotifyId> albumArtistIds = [];
+        var trackId = ExtractId(tagTrack, "SPOTIFY_ID", Constants.TrackKey, logger) ??
+            ExtractIdCore(tagTrack, "URL", $"{Constants.OpenUrl}/{Constants.TrackKey}/", logger);
+        var albumId = ExtractId(tagTrack, "SPOTIFY_ALBUM_ID", Constants.AlbumKey, logger);
+        var artistIds = ExtractIds(tagTrack, "SPOTIFY_ARTIST_ID", Constants.ArtistKey, logger).ToList();
+        var albumArtistIds = ExtractIds(tagTrack, "SPOTIFY_ALBUM_ARTIST_ID", Constants.ArtistKey, logger).ToList();
 
-        if (TryGetSanitizedAdditionalFields(tagTrack, "SPOTIFY_ID", out var prefixedSpotifyId) && prefixedSpotifyId.StartsWith(Constants.ProviderTrack + ":", StringComparison.Ordinal))
-        {
-            logger?.LogInformation("Found SPOTIFY_ID tag: {TagValue}", prefixedSpotifyId);
-            trackId = SpotifyId.TryFromBase62(prefixedSpotifyId[(Constants.ProviderTrack.Length + 1)..]);
-        }
+        var artistNames = tagTrack.Artist.Split('\x1f', StringSplitOptions.TrimEntries);
+        var albumArtistNames = tagTrack.AlbumArtist.Split('\x1f', StringSplitOptions.TrimEntries);
 
-        if (trackId != null && TryGetSanitizedAdditionalFields(tagTrack, "URL", out var prefixedSpotifyUrl) && prefixedSpotifyUrl.StartsWith(Constants.OpenUrl + "/track/", StringComparison.Ordinal))
-        {
-            logger?.LogInformation("Found URL tag: {TagValue}", prefixedSpotifyUrl);
-            trackId = SpotifyId.TryFromBase62(prefixedSpotifyUrl[(Constants.OpenUrl.Length + "/track/".Length)..]);
-        }
-
-        if (TryGetSanitizedAdditionalFields(tagTrack, "SPOTIFY_ALBUM_ID", out prefixedSpotifyId) && prefixedSpotifyId.StartsWith(Constants.ProviderAlbum + ":", StringComparison.Ordinal))
-        {
-            logger?.LogInformation("Found SPOTIFY_ALBUM_ID tag: {TagValue}", prefixedSpotifyId);
-            albumId = SpotifyId.TryFromBase62(prefixedSpotifyId[(Constants.ProviderAlbum.Length + 1)..]);
-        }
-
-        if (TryGetSanitizedAdditionalFields(tagTrack, "SPOTIFY_ARTIST_ID", out prefixedSpotifyId))
-        {
-            if (prefixedSpotifyId.Contains('\x1f'))
-            {
-                logger?.LogInformation("Found {TagCount} SPOTIFY_ARTIST_ID potential tags", prefixedSpotifyId.Count(c => c == '\x1f'));
-                var tags = prefixedSpotifyId.Split('\x1f', StringSplitOptions.TrimEntries);
-                foreach (var tag in tags)
-                {
-                    if (tag.StartsWith(Constants.ProviderArtist + ":", StringComparison.Ordinal))
-                    {
-                        logger?.LogInformation("Found SPOTIFY_ARTIST_ID tag: {TagValue}", tag);
-                        if (SpotifyId.TryFromBase62(tag[(Constants.ProviderArtist.Length + 1)..]) is { } artistId)
-                        {
-                            artistIds.Add(artistId);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (prefixedSpotifyId.StartsWith(Constants.ProviderArtist + ":", StringComparison.Ordinal))
-                {
-                    logger?.LogInformation("Found SPOTIFY_ARTIST_ID tag: {TagValue}", prefixedSpotifyId);
-                    if (SpotifyId.TryFromBase62(prefixedSpotifyId[(Constants.ProviderArtist.Length + 1)..]) is { } artistId)
-                    {
-                        artistIds.Add(artistId);
-                    }
-                }
-            }
-        }
-
-        if (TryGetSanitizedAdditionalFields(tagTrack, "SPOTIFY_ALBUM_ARTIST_ID", out prefixedSpotifyId))
-        {
-            if (prefixedSpotifyId.Contains('\x1f'))
-            {
-                logger?.LogInformation("Found {TagCount} SPOTIFY_ALBUM_ARTIST_ID potential tags", prefixedSpotifyId.Count(c => c == '\x1f'));
-                var tags = prefixedSpotifyId.Split('\x1f', StringSplitOptions.TrimEntries);
-                foreach (var tag in tags)
-                {
-                    if (tag.StartsWith(Constants.ProviderArtist + ":", StringComparison.Ordinal))
-                    {
-                        logger?.LogInformation("Found SPOTIFY_ALBUM_ARTIST_ID tag: {TagValue}", tag);
-                        if (SpotifyId.TryFromBase62(tag[(Constants.ProviderArtist.Length + 1)..]) is { } artistId)
-                        {
-                            albumArtistIds.Add(artistId);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (prefixedSpotifyId.StartsWith(Constants.ProviderArtist + ":", StringComparison.Ordinal))
-                {
-                    logger?.LogInformation("Found SPOTIFY_ALBUM_ARTIST_ID tag: {TagValue}", prefixedSpotifyId);
-                    if (SpotifyId.TryFromBase62(prefixedSpotifyId[(Constants.ProviderArtist.Length + 1)..]) is { } artistId)
-                    {
-                        albumArtistIds.Add(artistId);
-                    }
-                }
-            }
-        }
+        var artists = artistIds.Zip(artistNames, (id, name) => (Id: id, Name: name)).ToArray();
+        var albumArtists = albumArtistIds.Zip(albumArtistNames, (id, name) => (Id: id, Name: name)).ToArray();
 
         return new EmbeddedIds
         {
             Track = trackId,
             Album = albumId,
-            Artist = artistIds.ToArray(),
-            AlbumArtist = albumArtistIds.ToArray(),
+            Artist = artists,
+            AlbumArtist = albumArtists,
         };
+    }
+
+    private static SpotifyId? ExtractId(Track track, string field, string idType, ILogger? logger = null) =>
+        ExtractIdCore(track, field, $"{Constants.ProviderKey}:{idType}:", logger);
+
+    private static SpotifyId? ExtractIdCore(Track track, string field, string prefix, ILogger? logger = null)
+    {
+        if (ExtractTag(track, field) is { } id && id.StartsWith(prefix, StringComparison.Ordinal))
+        {
+            logger?.LogInformation("Found {FieldName} tag: {TagValue}", field, id);
+            return SpotifyId.TryFromBase62(id[prefix.Length..]);
+        }
+
+        return null;
+    }
+
+    private static IEnumerable<SpotifyId> ExtractIds(Track track, string field, string idType, ILogger? logger = null)
+    {
+        var prefix = $"{Constants.ProviderKey}:{idType}:";
+        if (ExtractTag(track, field) is { } ids)
+        {
+            foreach (var id in ids.Split('\x1f', StringSplitOptions.TrimEntries))
+            {
+                if (id.StartsWith(prefix, StringComparison.Ordinal))
+                {
+                    logger?.LogInformation("Found {FieldName} tag: {TagValue}", field, id);
+                    if (SpotifyId.TryFromBase62(id[prefix.Length..]) is { } parsedId)
+                    {
+                        yield return parsedId;
+                    }
+                }
+            }
+        }
+    }
+
+    private static string? ExtractTag(Track track, string field)
+    {
+        if (TryGetSanitizedAdditionalFields(track, field, out var value))
+        {
+            return value;
+        }
+
+        return null;
     }
 
     private static string? GetSanitizedStringTag(string? tag)
@@ -168,5 +127,42 @@ internal static class TagHelper
 
         value = null;
         return false;
+    }
+
+    internal readonly record struct EmbeddedIds
+    {
+        public SpotifyId? Track { get; init; }
+
+        public SpotifyId? Album { get; init; }
+
+        public (SpotifyId Id, string Name)[] Artist { get; init; }
+
+        public (SpotifyId Id, string Name)[] AlbumArtist { get; init; }
+
+        public SpotifyId? GetArtistByName(string artistName)
+        {
+            foreach (var (id, name) in Artist)
+            {
+                if (name.Equals(artistName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return id;
+                }
+            }
+
+            return null;
+        }
+
+        public SpotifyId? GetAlbumArtistByName(string albumArtistName)
+        {
+            foreach (var (id, name) in AlbumArtist)
+            {
+                if (name.Equals(albumArtistName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return id;
+                }
+            }
+
+            return null;
+        }
     }
 }

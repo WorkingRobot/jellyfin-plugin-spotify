@@ -45,9 +45,9 @@ public class ArtistMetadataProvider(ILoggerFactory loggerFactory, SessionManager
 
         if (!spotifyId.HasValue)
         {
-            foreach (var songInfo in info.SongInfos)
+            foreach (var path in info.SongInfos.Select(s => s.Path).Concat(Helpers.GetChildPaths(info.Path)).Distinct())
             {
-                var songTags = TagHelper.ExtractSpotifyIds(songInfo.Path, _logger);
+                var songTags = TagHelper.ExtractSpotifyIds(path, _logger);
                 spotifyId ??= songTags.GetArtistByName(info.Name);
                 spotifyId ??= songTags.GetAlbumArtistByName(info.Name);
                 if (spotifyId.HasValue)
@@ -116,9 +116,9 @@ public class ArtistMetadataProvider(ILoggerFactory loggerFactory, SessionManager
 
         if (!spotifyId.HasValue)
         {
-            foreach (var songInfo in searchInfo.SongInfos)
+            foreach (var path in searchInfo.SongInfos.Select(s => s.Path).Concat(Helpers.GetChildPaths(searchInfo.Path)).Distinct())
             {
-                var songTags = TagHelper.ExtractSpotifyIds(songInfo.Path, _logger);
+                var songTags = TagHelper.ExtractSpotifyIds(path, _logger);
                 spotifyId ??= songTags.GetArtistByName(searchInfo.Name);
                 spotifyId ??= songTags.GetAlbumArtistByName(searchInfo.Name);
                 if (spotifyId.HasValue)

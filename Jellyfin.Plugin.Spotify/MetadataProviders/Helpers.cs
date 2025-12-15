@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Linq;
 using Jellyfin.Plugin.Spotify.Api;
 using Jellyfin.Plugin.Spotify.ImageProviders;
@@ -67,5 +69,27 @@ internal static class Helpers
         }
 
         return ret;
+    }
+
+    public static string[] GetChildPaths(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            return [];
+        }
+
+        if (!Directory.Exists(path))
+        {
+            return [];
+        }
+
+        try
+        {
+            return Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+        }
+        catch (SystemException)
+        {
+            return [];
+        }
     }
 }

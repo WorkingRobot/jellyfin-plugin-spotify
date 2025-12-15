@@ -40,9 +40,9 @@ public class ArtistImageProvider(ILoggerFactory loggerFactory, SessionManager se
 
         if (!spotifyId.HasValue)
         {
-            foreach (var child in artist.Children)
+            foreach (var path in artist.Children.Select(s => s.Path).Concat(MetadataProviders.Helpers.GetChildPaths(artist.Path)).Distinct())
             {
-                var songTags = TagHelper.ExtractSpotifyIds(child.Path, _logger);
+                var songTags = TagHelper.ExtractSpotifyIds(path, _logger);
                 spotifyId ??= songTags.GetArtistByName(item.Name);
                 spotifyId ??= songTags.GetAlbumArtistByName(item.Name);
                 if (spotifyId.HasValue)

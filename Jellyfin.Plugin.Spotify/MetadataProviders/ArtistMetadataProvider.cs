@@ -43,18 +43,19 @@ public class ArtistMetadataProvider(ILoggerFactory loggerFactory, SessionManager
 
         var spotifyId = info.GetProviderId(Constants.ProviderArtist) is { } id ? SpotifyId.TryFromBase62(id) : null;
 
-        // if (!spotifyId.HasValue)
-        // {
-        //     foreach (var songInfo in info.SongInfos)
-        //     {
-        //         spotifyId ??= songInfo.GetProviderId(Constants.ProviderArtist) is { } songArtistId ? SpotifyId.TryFromBase62(songArtistId) : null;
-        //         spotifyId ??= TagHelper.ExtractSpotifyIds(songInfo.Path, _logger).Artist.FirstOrDefault();
-        //         if (spotifyId.HasValue)
-        //         {
-        //             break;
-        //         }
-        //     }
-        // }
+        if (!spotifyId.HasValue)
+        {
+            foreach (var songInfo in info.SongInfos)
+            {
+                var songTags = TagHelper.ExtractSpotifyIds(songInfo.Path, _logger);
+                spotifyId ??= songTags.GetArtistByName(info.Name);
+                spotifyId ??= songTags.GetAlbumArtistByName(info.Name);
+                if (spotifyId.HasValue)
+                {
+                    break;
+                }
+            }
+        }
 
         if (!spotifyId.HasValue)
         {
@@ -117,8 +118,9 @@ public class ArtistMetadataProvider(ILoggerFactory loggerFactory, SessionManager
         {
             foreach (var songInfo in searchInfo.SongInfos)
             {
-                spotifyId ??= songInfo.GetProviderId(Constants.ProviderArtist) is { } songAlbumId ? SpotifyId.TryFromBase62(songAlbumId) : null;
-                // spotifyId ??= TagHelper.ExtractSpotifyIds(songInfo.Path, _logger).Artist;
+                var songTags = TagHelper.ExtractSpotifyIds(songInfo.Path, _logger);
+                spotifyId ??= songTags.GetArtistByName(searchInfo.Name);
+                spotifyId ??= songTags.GetAlbumArtistByName(searchInfo.Name);
                 if (spotifyId.HasValue)
                 {
                     break;

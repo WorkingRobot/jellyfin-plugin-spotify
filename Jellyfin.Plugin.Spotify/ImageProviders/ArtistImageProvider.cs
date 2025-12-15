@@ -38,18 +38,19 @@ public class ArtistImageProvider(ILoggerFactory loggerFactory, SessionManager se
 
         var spotifyId = item.GetProviderId(Constants.ProviderArtist) is { } id ? SpotifyId.TryFromBase62(id) : null;
 
-        // if (!spotifyId.HasValue)
-        // {
-        //     foreach (var child in artist.Children)
-        //     {
-        //         spotifyId ??= child.GetProviderId(Constants.ProviderArtist) is { } songArtistId ? SpotifyId.TryFromBase62(songArtistId) : null;
-        //         // spotifyId ??= TagHelper.ExtractSpotifyIds(child.Path, _logger).Album;
-        //         if (spotifyId.HasValue)
-        //         {
-        //             break;
-        //         }
-        //     }
-        // }
+        if (!spotifyId.HasValue)
+        {
+            foreach (var child in artist.Children)
+            {
+                var songTags = TagHelper.ExtractSpotifyIds(child.Path, _logger);
+                spotifyId ??= songTags.GetArtistByName(item.Name);
+                spotifyId ??= songTags.GetAlbumArtistByName(item.Name);
+                if (spotifyId.HasValue)
+                {
+                    break;
+                }
+            }
+        }
 
         if (spotifyId is { } spotifyIdValue)
         {

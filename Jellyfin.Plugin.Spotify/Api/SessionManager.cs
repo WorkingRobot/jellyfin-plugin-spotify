@@ -145,7 +145,7 @@ public sealed class SessionManager : IAsyncDisposable
             $"https://api.spotify.com/v1/search?q={Uri.EscapeDataString(name)}&type=track",
             cancellationToken).ConfigureAwait(false);
 
-        return [.. results?.Tracks?.Items?.Select(i => SpotifyId.FromBase62(i.Id!)).Take(5) ?? []];
+        return [.. results?.Tracks?.Items?.Select(i => SpotifyId.FromBase62(i.Id!)).Take(3) ?? []];
     }
 
     public async Task<SpotifyId[]> SearchAlbumAsync(string name, CancellationToken cancellationToken, ILogger? logger = null)
@@ -159,7 +159,7 @@ public sealed class SessionManager : IAsyncDisposable
             $"https://api.spotify.com/v1/search?q={Uri.EscapeDataString(name)}&type=album",
             cancellationToken).ConfigureAwait(false);
 
-        return [.. results?.Albums?.Items?.Select(i => SpotifyId.FromBase62(i.Id!)).Take(5) ?? []];
+        return [.. results?.Albums?.Items?.Select(i => SpotifyId.FromBase62(i.Id!)).Take(3) ?? []];
     }
 
     public async Task<SpotifyId[]> SearchArtistAsync(string name, CancellationToken cancellationToken)
@@ -173,7 +173,7 @@ public sealed class SessionManager : IAsyncDisposable
             $"https://api.spotify.com/v1/search?q={Uri.EscapeDataString(name)}&type=artist",
             cancellationToken).ConfigureAwait(false);
 
-        return [.. results?.Artists?.Items?.Select(i => SpotifyId.FromBase62(i.Id!)).Take(5) ?? []];
+        return [.. results?.Artists?.Items?.Select(i => SpotifyId.FromBase62(i.Id!)).Take(3) ?? []];
     }
 
     public Task<HttpResponseMessage> GetAsync(string url, CancellationToken cancellationToken)
